@@ -1,0 +1,1504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Sempra EHS — Field Incident Reporter</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue:#0070f2; --blue-dark:#0057c2; --shell:#354a5e; --green:#107e3e;
+      --orange:#e9730c; --red:#bb0000; --yellow:#e8a000; --purple:#6a1b9a;
+      --bg:#f2f4f7; --surface:#fff; --border:#d9dde3; --text:#1d2d3e; --muted:#6b7d8f;
+      --r:10px;
+    }
+    body {
+      font-family:-apple-system,"Segoe UI",system-ui,sans-serif;
+      background:#0d1e35; color:var(--text); min-height:100vh;
+      display:flex; flex-direction:column;
+      background-image: url("data:image/svg+xml,\
+%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='340' viewBox='0 0 800 340'%3E\
+%3Cdefs%3E\
+%3ClinearGradient id='sk' x1='0' y1='0' x2='0' y2='1'%3E\
+%3Cstop offset='0%25' stop-color='%230d1e35'/%3E\
+%3Cstop offset='38%25' stop-color='%231a4a8a'/%3E\
+%3Cstop offset='65%25' stop-color='%232a7ab0'/%3E\
+%3Cstop offset='82%25' stop-color='%23c84a0a'/%3E\
+%3Cstop offset='92%25' stop-color='%23f07010'/%3E\
+%3Cstop offset='100%25' stop-color='%23ffa030'/%3E\
+%3C/linearGradient%3E\
+%3CradialGradient id='sun' cx='62%25' cy='88%25' r='12%25'%3E\
+%3Cstop offset='0%25' stop-color='%23ffe060' stop-opacity='1'/%3E\
+%3Cstop offset='40%25' stop-color='%23ffaa20' stop-opacity='.9'/%3E\
+%3Cstop offset='100%25' stop-color='%23ff6600' stop-opacity='0'/%3E\
+%3C/radialGradient%3E\
+%3C/defs%3E\
+%3Crect width='800' height='340' fill='url(%23sk)'/%3E\
+%3Crect width='800' height='340' fill='url(%23sun)' opacity='.85'/%3E\
+%3C!-- ground --\
+%3E%3Crect y='295' width='800' height='45' fill='%230a1220'/%3E\
+%3C!-- sparse bare trees left --\
+%3E%3Cg stroke='%230e1a28' stroke-width='1.2' fill='none'%3E\
+%3Cline x1='18' y1='295' x2='18' y2='268'/%3E%3Cline x1='18' y1='275' x2='10' y2='262'/%3E%3Cline x1='18' y1='278' x2='26' y2='264'/%3E\
+%3Cline x1='34' y1='295' x2='34' y2='260'/%3E%3Cline x1='34' y1='268' x2='24' y2='255'/%3E%3Cline x1='34' y1='272' x2='44' y2='258'/%3E\
+%3Cline x1='52' y1='295' x2='52' y2='270'/%3E%3Cline x1='52' y1='276' x2='44' y2='264'/%3E%3Cline x1='52' y1='279' x2='60' y2='266'/%3E\
+%3Cline x1='68' y1='295' x2='68' y2='265'/%3E%3Cline x1='68' y1='272' x2='58' y2='260'/%3E%3Cline x1='68' y1='275' x2='78' y2='262'/%3E\
+%3C/g%3E\
+%3C!-- substation right — dense insulator/equipment silhouettes --\
+%3E%3Cg fill='%230a1220' stroke='none'%3E\
+%3Crect x='600' y='260' width='4' height='35'/%3E%3Crect x='614' y='255' width='4' height='40'/%3E%3Crect x='628' y='262' width='4' height='33'/%3E\
+%3Crect x='642' y='258' width='4' height='37'/%3E%3Crect x='656' y='265' width='4' height='30'/%3E%3Crect x='670' y='260' width='4' height='35'/%3E\
+%3Crect x='684' y='256' width='4' height='39'/%3E%3Crect x='698' y='263' width='4' height='32'/%3E%3Crect x='712' y='258' width='4' height='37'/%3E\
+%3Crect x='726' y='265' width='4' height='30'/%3E%3Crect x='740' y='260' width='4' height='35'/%3E%3Crect x='754' y='255' width='4' height='40'/%3E\
+%3Crect x='768' y='262' width='4' height='33'/%3E%3Crect x='782' y='258' width='4' height='37'/%3E\
+%3Crect x='597' y='258' width='190' height='3'/%3E\
+%3Crect x='597' y='270' width='190' height='2'/%3E\
+%3Crect x='597' y='280' width='190' height='2'/%3E\
+%3C/g%3E\
+%3C!-- TOWER LEFT — large lattice pylon --\
+%3E%3Cg transform='translate(165,30)' fill='%230d1828' stroke='%230d1828' stroke-width='1'%3E\
+%3C!-- main vertical --\
+%3Epolygon points='0,0 4,0 14,230 -14,230' /%3E\
+%3C!-- left leg spread --\
+%3Epolygon points='-14,230 -34,265 -38,265 -18,230' /%3E\
+%3C!-- right leg spread --\
+%3Epolygon points='14,230 34,265 38,265 18,230' /%3E\
+%3C!-- cross brace lattice --\
+%3Eline x1='-12' y1='50' x2='12' y2='90'/%3E%3Cline x1='12' y1='50' x2='-12' y2='90'/%3E\
+%3Cline x1='-12' y1='90' x2='12' y2='130'/%3E%3Cline x1='12' y1='90' x2='-12' y2='130'/%3E\
+%3Cline x1='-12' y1='130' x2='12' y2='170'/%3E%3Cline x1='12' y1='130' x2='-12' y2='170'/%3E\
+%3Cline x1='-12' y1='170' x2='12' y2='210'/%3E%3Cline x1='12' y1='170' x2='-12' y2='210'/%3E\
+%3C!-- top cross-arms (3 levels) --\
+%3Eline x1='-52' y1='10' x2='52' y2='10' stroke-width='3'/%3E\
+%3Cline x1='-42' y1='28' x2='42' y2='28' stroke-width='2.5'/%3E\
+%3Cline x1='-32' y1='44' x2='32' y2='44' stroke-width='2'/%3E\
+%3C!-- arm diagonals --\
+%3Eline x1='0' y1='0' x2='-52' y2='10'/%3E%3Cline x1='0' y1='0' x2='52' y2='10'/%3E\
+%3Cline x1='0' y1='10' x2='-42' y2='28'/%3E%3Cline x1='0' y1='10' x2='42' y2='28'/%3E\
+%3Cline x1='0' y1='28' x2='-32' y2='44'/%3E%3Cline x1='0' y1='28' x2='32' y2='44'/%3E\
+%3C!-- insulator drops --\
+%3Eline x1='-52' y1='10' x2='-52' y2='18' stroke-width='2'/%3E%3Ccircle cx='-52' cy='20' r='2.5' fill='%230d1828'/%3E\
+%3Cline x1='52' y1='10' x2='52' y2='18' stroke-width='2'/%3E%3Ccircle cx='52' cy='20' r='2.5'/%3E\
+%3Cline x1='-42' y1='28' x2='-42' y2='36' stroke-width='2'/%3E%3Ccircle cx='-42' cy='38' r='2'/%3E\
+%3Cline x1='42' y1='28' x2='42' y2='36' stroke-width='2'/%3E%3Ccircle cx='42' cy='38' r='2'/%3E\
+%3Cline x1='-32' y1='44' x2='-32' y2='51' stroke-width='1.5'/%3E%3Ccircle cx='-32' cy='53' r='1.8'/%3E\
+%3Cline x1='32' y1='44' x2='32' y2='51' stroke-width='1.5'/%3E%3Ccircle cx='32' cy='53' r='1.8'/%3E\
+%3C/g%3E\
+%3C!-- TOWER RIGHT — slightly smaller, further away --\
+%3E%3Cg transform='translate(510,55)' fill='%230d1828' stroke='%230d1828' stroke-width='.9'%3E\
+%3Cpolygon points='0,0 3,0 11,195 -11,195' /%3E\
+%3Cpolygon points='-11,195 -28,225 -32,225 -14,195' /%3E\
+%3Cpolygon points='11,195 28,225 32,225 14,195' /%3E\
+%3Cline x1='-10' y1='42' x2='10' y2='76'/%3E%3Cline x1='10' y1='42' x2='-10' y2='76'/%3E\
+%3Cline x1='-10' y1='76' x2='10' y2='110'/%3E%3Cline x1='10' y1='76' x2='-10' y2='110'/%3E\
+%3Cline x1='-10' y1='110' x2='10' y2='144'/%3E%3Cline x1='10' y1='110' x2='-10' y2='144'/%3E\
+%3Cline x1='-10' y1='144' x2='10' y2='178'/%3E%3Cline x1='10' y1='144' x2='-10' y2='178'/%3E\
+%3Cline x1='-44' y1='8' x2='44' y2='8' stroke-width='2.5'/%3E\
+%3Cline x1='-35' y1='24' x2='35' y2='24' stroke-width='2'/%3E\
+%3Cline x1='-27' y1='38' x2='27' y2='38' stroke-width='1.8'/%3E\
+%3Cline x1='0' y1='0' x2='-44' y2='8'/%3E%3Cline x1='0' y1='0' x2='44' y2='8'/%3E\
+%3Cline x1='0' y1='8' x2='-35' y2='24'/%3E%3Cline x1='0' y1='8' x2='35' y2='24'/%3E\
+%3Cline x1='0' y1='24' x2='-27' y2='38'/%3E%3Cline x1='0' y1='24' x2='27' y2='38'/%3E\
+%3Cline x1='-44' y1='8' x2='-44' y2='15' stroke-width='1.8'/%3E%3Ccircle cx='-44' cy='17' r='2.2'/%3E\
+%3Cline x1='44' y1='8' x2='44' y2='15' stroke-width='1.8'/%3E%3Ccircle cx='44' cy='17' r='2.2'/%3E\
+%3Cline x1='-35' y1='24' x2='-35' y2='30' stroke-width='1.5'/%3E%3Ccircle cx='-35' cy='32' r='1.8'/%3E\
+%3Cline x1='35' y1='24' x2='35' y2='30' stroke-width='1.5'/%3E%3Ccircle cx='35' cy='32' r='1.8'/%3E\
+%3C/g%3E\
+%3C!-- POWER LINES — multiple catenary cables fan from tower arms --\
+%3E%3Cg stroke='%23071018' stroke-width='1.2' fill='none' opacity='.9'%3E\
+%3Cpath d='M113 40 Q340 100 466 63'/%3E\
+%3Cpath d='M123 48 Q340 112 470 72'/%3E\
+%3Cpath d='M133 54 Q340 122 474 80'/%3E\
+%3Cpath d='M466 63 Q590 30 740 50'/%3E\
+%3Cpath d='M470 72 Q590 42 742 62'/%3E\
+%3Cpath d='M474 80 Q590 52 744 72'/%3E\
+%3Cpath d='M107 38 Q340 92 462 57'/%3E\
+%3Cpath d='M127 57 Q340 130 476 88'/%3E\
+%3Cpath d='M460 57 Q590 22 738 42'/%3E\
+%3Cpath d='M478 90 Q590 60 746 80'/%3E\
+%3C/g%3E\
+%3C!-- WORKER SILHOUETTE centre --\
+%3E%3Cg fill='%230a1015'%3E\
+%3C!-- body --\
+%3Eellipse cx='310' cy='290' rx='14' ry='5'/%3E\
+%3Crect x='302' y='255' width='16' height='38' rx='4'/%3E\
+%3C!-- head --\
+%3Ecircle cx='310' cy='248' r='10'/%3E\
+%3C!-- hard hat --\
+%3Eellipse cx='310' cy='240' rx='13' ry='5'/%3E\
+%3Crect x='299' y='236' width='22' height='6' rx='2'/%3E\
+%3C!-- left arm holding hat --\
+%3Epath d='M302 265 Q288 272 282 280' stroke='%230a1015' stroke-width='6' stroke-linecap='round' fill='none'/%3E\
+%3Ccircle cx='280' cy='283' r='6'/%3E\
+%3C!-- right arm down --\
+%3Epath d='M318 265 Q326 275 326 285' stroke='%230a1015' stroke-width='6' stroke-linecap='round' fill='none'/%3E\
+%3C!-- legs --\
+%3Erect x='303' y='290' width='6' height='8' rx='2'/%3E%3Crect x='312' y='290' width='6' height='8' rx='2'/%3E\
+%3C/g%3E\
+%3C/svg%3E");
+      background-size: 800px 340px;
+      background-repeat: repeat-x;
+      background-position: center bottom;
+      background-attachment: fixed;
+    }
+    /* Shell */
+    .shell { background:var(--shell); color:#fff; display:flex; align-items:center; gap:10px; padding:0 16px; height:48px; position:sticky; top:0; z-index:200; flex-shrink:0; }
+    .shell-logo { width:32px; height:32px; background:var(--blue); border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; color:#fff; flex-shrink:0; }
+    .shell-title { font-size:14px; font-weight:700; flex:1; }
+    .shell-badge { background:var(--orange); color:#fff; font-size:10px; font-weight:700; padding:2px 8px; border-radius:10px; }
+    .shell-badge2 { background:var(--blue); color:#fff; font-size:10px; font-weight:700; padding:2px 8px; border-radius:10px; }
+    /* TTS toggle */
+    .tts-btn { width:32px; height:32px; border-radius:50%; border:1.5px solid rgba(255,255,255,.35); background:transparent; color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0; transition:background .15s,border-color .15s; }
+    .tts-btn:hover { background:rgba(255,255,255,.15); }
+    .tts-btn.tts-on  { background:rgba(255,255,255,.22); border-color:#fff; }
+    .tts-btn.tts-speaking { background:var(--blue); border-color:var(--blue); animation:tts-pulse 1s infinite; }
+    @keyframes tts-pulse{0%,100%{box-shadow:0 0 0 0 rgba(0,112,242,.6)}50%{box-shadow:0 0 0 6px rgba(0,112,242,0)}}
+    /* Speaking label under chat */
+    .speaking-label { font-size:11px; color:var(--blue); font-weight:700; text-align:center; display:none; }
+    .speaking-label.show { display:block; }
+    /* Voice mode overlay — full-screen hands-free indicator */
+    .voice-mode-overlay { position:fixed; inset:0; z-index:400; background:rgba(0,0,0,.72); display:none; flex-direction:column; align-items:center; justify-content:center; gap:18px; }
+    .voice-mode-overlay.show { display:flex; }
+    .vmo-orb { width:100px; height:100px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:40px; transition:background .2s,box-shadow .2s; }
+    .vmo-orb.idle    { background:#354a5e; box-shadow:none; }
+    .vmo-orb.listen  { background:var(--red); box-shadow:0 0 0 0 rgba(187,0,0,.6); animation:orb-pulse 1.2s infinite; }
+    .vmo-orb.speak   { background:var(--blue); box-shadow:0 0 0 0 rgba(0,112,242,.6); animation:orb-pulse 1.2s infinite; }
+    .vmo-orb.think   { background:#7b1fa2; box-shadow:none; animation:orb-spin 1.2s linear infinite; }
+    @keyframes orb-pulse{0%{box-shadow:0 0 0 0 rgba(255,255,255,.5)}70%{box-shadow:0 0 0 22px rgba(255,255,255,0)}100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}}
+    @keyframes orb-spin{0%{filter:hue-rotate(0deg)}100%{filter:hue-rotate(360deg)}}
+    .vmo-status { color:#fff; font-size:15px; font-weight:700; letter-spacing:.02em; }
+    .vmo-interim { color:rgba(255,255,255,.7); font-size:13px; font-style:italic; max-width:300px; text-align:center; min-height:20px; }
+    .vmo-close { position:absolute; top:20px; right:20px; background:rgba(255,255,255,.15); border:none; color:#fff; width:36px; height:36px; border-radius:50%; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+    .vmo-close:hover { background:rgba(255,255,255,.25); }
+    /* Voice mode activate button in input bar */
+    .ibtn.voice-mode-btn { background:var(--green); border-color:var(--green); color:#fff; }
+    .ibtn.voice-mode-btn:hover { background:#0a5c2c; }
+    .ibtn.voice-mode-btn.active { background:var(--red); border-color:var(--red); animation:pulse 1s infinite; }
+    /* Body */
+    .app { flex:1; max-width:500px; width:100%; margin:0 auto; padding:10px 10px 90px; display:flex; flex-direction:column; gap:8px; position:relative; z-index:1; }
+    /* Banner */
+    .banner { border-radius:var(--r); padding:9px 13px; font-size:12px; font-weight:600; display:none; align-items:center; gap:8px; border:1px solid transparent; }
+    .banner.show { display:flex; }
+    .banner.urgent  { background:#fff0f0; color:var(--red);    border-color:#ffb3b3; }
+    .banner.warning { background:#fff8e1; color:#7a5000;       border-color:var(--yellow); }
+    .banner.success { background:#e8f5e9; color:var(--green);  border-color:#a5d6a7; }
+    .banner.info    { background:#e3f2fd; color:var(--blue-dark); border-color:#90caf9; }
+    /* Workflow */
+    .wf-panel { background:var(--surface); border:1px solid var(--border); border-radius:var(--r); overflow:hidden; }
+    .wf-head  { background:var(--shell); color:#fff; padding:8px 14px; font-size:11px; font-weight:700; letter-spacing:.05em; display:flex; align-items:center; gap:8px; }
+    .wf-steps { display:flex; padding:10px 12px; gap:0; overflow-x:auto; }
+    .wf-step  { display:flex; flex-direction:column; align-items:center; gap:3px; flex:1; min-width:60px; position:relative; }
+    .wf-step:not(:last-child)::after { content:''; position:absolute; top:12px; left:55%; right:-45%; height:2px; background:var(--border); z-index:0; }
+    .wf-step.done:not(:last-child)::after { background:var(--green); }
+    .wf-dot  { width:26px; height:26px; border-radius:50%; border:2px solid var(--border); background:#fff; display:flex; align-items:center; justify-content:center; font-size:11px; position:relative; z-index:1; }
+    .wf-step.active .wf-dot { border-color:var(--blue); background:#e3f2fd; color:var(--blue); }
+    .wf-step.done   .wf-dot { border-color:var(--green); background:var(--green); color:#fff; }
+    .wf-lbl  { font-size:9px; color:var(--muted); text-align:center; line-height:1.2; }
+    .wf-step.active .wf-lbl { color:var(--blue); font-weight:700; }
+    .wf-step.done   .wf-lbl { color:var(--green); }
+    /* Chat */
+    .chat { background:var(--surface); border:1px solid var(--border); border-radius:var(--r); padding:12px 10px; overflow-y:auto; display:flex; flex-direction:column; gap:10px; min-height:340px; max-height:52vh; }
+    .chat::-webkit-scrollbar { width:3px; } .chat::-webkit-scrollbar-thumb { background:#ccd6e0; border-radius:3px; }
+    .msg { display:flex; gap:7px; align-items:flex-end; }
+    .msg.bot  { justify-content:flex-start; }
+    .msg.user { justify-content:flex-end; }
+    .av { width:28px; height:28px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:800; }
+    .av.b { background:var(--blue); color:#fff; }
+    .av.u { background:var(--shell); color:#fff; }
+    .bub { max-width:84%; padding:8px 12px; border-radius:14px; font-size:13px; line-height:1.55; }
+    .msg.bot  .bub { background:#f0f4ff; border-bottom-left-radius:3px; }
+    .msg.user .bub { background:var(--blue); color:#fff; border-bottom-right-radius:3px; }
+    .bub .ts  { font-size:10px; opacity:.55; margin-top:3px; text-align:right; }
+    .qrs { display:flex; flex-wrap:wrap; gap:6px; padding:2px 0 0 35px; }
+    .qr  { background:#fff; border:1px solid var(--blue); color:var(--blue); border-radius:14px; padding:5px 12px; font-size:12px; cursor:pointer; transition:background .15s,color .15s; }
+    .qr:hover { background:var(--blue); color:#fff; }
+    .typing { display:flex; gap:4px; align-items:center; padding:8px 12px; }
+    .typing span { width:6px; height:6px; border-radius:50%; background:var(--blue); animation:bounce 1.2s infinite ease-in-out; }
+    .typing span:nth-child(2){animation-delay:.2s} .typing span:nth-child(3){animation-delay:.4s}
+    @keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+    .photo-prev { max-width:190px; border-radius:7px; margin-top:5px; border:1px solid var(--border); cursor:pointer; }
+    /* Photo picker sheet */
+    .photo-sheet { position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:500px; background:#fff; border-radius:16px 16px 0 0; border:1px solid var(--border); box-shadow:0 -4px 24px rgba(0,0,0,.13); z-index:300; padding:14px 14px 28px; display:none; }
+    .photo-sheet.show { display:block; }
+    .photo-sheet-title { font-size:12px; font-weight:700; color:var(--muted); text-align:center; margin-bottom:12px; letter-spacing:.04em; text-transform:uppercase; }
+    .photo-opts { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .photo-opt { display:flex; flex-direction:column; align-items:center; gap:6px; padding:16px 10px; border-radius:10px; border:1px solid var(--border); background:#f7f8fa; cursor:pointer; font-size:12px; font-weight:600; color:var(--text); transition:background .15s; }
+    .photo-opt:hover, .photo-opt:active { background:#e3f2fd; border-color:var(--blue); color:var(--blue); }
+    .photo-opt .opt-icon { font-size:28px; }
+    .photo-sheet-cancel { width:100%; margin-top:10px; padding:11px; border:none; border-radius:8px; background:#f2f4f7; font-size:13px; font-weight:700; cursor:pointer; color:var(--muted); }
+    .photo-sheet-cancel:hover { background:#e5e7eb; }
+    /* Photo thumbnails row */
+    .photo-thumbs { display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
+    .photo-thumb-wrap { position:relative; }
+    .photo-thumb { width:64px; height:64px; object-fit:cover; border-radius:7px; border:1px solid var(--border); cursor:pointer; display:block; }
+    .photo-thumb-del { position:absolute; top:-5px; right:-5px; width:18px; height:18px; border-radius:50%; background:var(--red); color:#fff; font-size:11px; font-weight:700; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; line-height:1; }
+    /* Fullscreen photo preview overlay */
+    .photo-overlay { position:fixed; inset:0; background:rgba(0,0,0,.88); z-index:500; display:none; align-items:center; justify-content:center; }
+    .photo-overlay.show { display:flex; }
+    .photo-overlay img { max-width:95vw; max-height:90vh; border-radius:8px; object-fit:contain; }
+    .photo-overlay-close { position:absolute; top:16px; right:16px; width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,.2); color:#fff; font-size:20px; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+    /* Overlay for sheet backdrop */
+    .sheet-backdrop { position:fixed; inset:0; background:rgba(0,0,0,.35); z-index:299; display:none; }
+    .sheet-backdrop.show { display:block; }
+    /* Input bar */
+    .ibar { position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:500px; background:var(--surface); border-top:1px solid var(--border); padding:8px 10px; display:flex; gap:7px; align-items:center; z-index:100; }
+    .cinput { flex:1; border:1px solid var(--border); border-radius:20px; padding:8px 13px; font-size:13.5px; outline:none; font-family:inherit; resize:none; line-height:1.4; max-height:76px; overflow-y:auto; transition:border-color .2s; }
+    .cinput:focus { border-color:var(--blue); }
+    .cinput::placeholder { color:#adb5bd; }
+    .ibtn { width:38px; height:38px; border-radius:50%; border:1px solid var(--border); background:var(--surface); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; transition:background .15s; }
+    .ibtn:hover { background:#f0f4ff; }
+    .ibtn.send { background:var(--blue); border-color:var(--blue); color:#fff; }
+    .ibtn.send:hover { background:var(--blue-dark); }
+    .ibtn.rec  { background:var(--red); border-color:var(--red); animation:pulse 1s infinite; }
+    @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(187,0,0,.4)}50%{box-shadow:0 0 0 6px rgba(187,0,0,0)}}
+    #photoCameraInput { display:none; }
+    #photoGalleryInput { display:none; }
+    .vrec-label { font-size:11px; color:var(--red); font-weight:700; text-align:center; display:none; }
+    .vrec-label.show { display:block; }
+    /* Cards */
+    .card { background:var(--surface); border:1px solid var(--border); border-radius:var(--r); overflow:hidden; display:none; }
+    .card.show { display:block; }
+    .card-head { padding:8px 14px; font-size:12px; font-weight:700; color:#fff; display:flex; align-items:center; gap:7px; }
+    .card-body { padding:12px 14px; }
+    /* Fields grid */
+    .fgrid { display:grid; grid-template-columns:1fr 1fr; gap:5px 10px; }
+    .fgrid.single { grid-template-columns:1fr; }
+    .field label { font-size:10px; color:var(--muted); font-weight:600; display:block; }
+    .field span  { font-size:12px; font-weight:600; color:var(--text); }
+    .field span.tag-green { color:var(--green); }
+    .field span.tag-red   { color:var(--red); }
+    .field span.tag-orange{ color:var(--orange); }
+    /* OSHA rows */
+    .orow { display:flex; justify-content:space-between; border-bottom:1px solid #f0f0f0; padding:4px 0; }
+    .orow:last-child { border-bottom:none; }
+    .okey { font-size:11px; color:var(--muted); max-width:55%; }
+    .oval { font-size:11px; font-weight:700; text-align:right; max-width:50%; }
+    /* Deadline alert */
+    .deadline-box { border-radius:7px; padding:8px 12px; margin-top:8px; font-size:12px; line-height:1.6; }
+    .deadline-box.urgent  { background:#fff0f0; border:1px solid #ffb3b3; color:var(--red); }
+    .deadline-box.warning { background:#fff8e1; border:1px solid var(--yellow); color:#7a5000; }
+    .deadline-box.ok      { background:#e8f5e9; border:1px solid #a5d6a7; color:var(--green); }
+    /* Action buttons */
+    .action-btn { width:100%; padding:9px; border:none; border-radius:6px; font-size:13px; font-weight:700; cursor:pointer; margin-top:7px; }
+    .action-btn.primary { background:var(--blue); color:#fff; }
+    .action-btn.primary:hover { background:var(--blue-dark); }
+    .action-btn.orange  { background:var(--orange); color:#fff; }
+    .action-btn.orange:hover  { background:#c45e00; }
+    .action-btn.green   { background:var(--green); color:#fff; }
+    .action-btn.green:hover   { background:#0a5c2c; }
+    .action-btn:disabled { opacity:.55; cursor:not-allowed; }
+    /* Section divider */
+    .sect-title { font-size:10px; font-weight:700; color:var(--muted); letter-spacing:.06em; text-transform:uppercase; margin:4px 0 4px 0; }
+    /* Recordability badge */
+    .rec-badge { display:inline-block; padding:2px 9px; border-radius:10px; font-size:11px; font-weight:700; }
+    .rec-badge.yes { background:#fff0f0; color:var(--red); border:1px solid #ffb3b3; }
+    .rec-badge.no  { background:#e8f5e9; color:var(--green); border:1px solid #a5d6a7; }
+    footer { text-align:center; font-size:11px; color:var(--muted); padding:8px; border-top:1px solid var(--border); margin-top:4px; }
+  </style>
+</head>
+<body>
+<div class="shell">
+  <div class="shell-logo">SE</div>
+  <span class="shell-title">Sempra EHS — Field Incident Reporter</span>
+  <span class="shell-badge2">SAP Fiori</span>
+  <span class="shell-badge">OSHA</span>
+  <button class="tts-btn" id="ttsBtn" title="Toggle bot voice (Text-to-Speech)">🔇</button>
+</div>
+<div class="app">
+  <!-- Banner -->
+  <div class="banner" id="banner"></div>
+  <!-- Workflow -->
+  <div class="wf-panel">
+    <div class="wf-head">⚡ Incident Workflow — Sempra EHS / SAP S/4HANA EHSM</div>
+    <div class="wf-steps">
+      <div class="wf-step active" id="wf0"><div class="wf-dot">📝</div><div class="wf-lbl">Report<br/>Incident</div></div>
+      <div class="wf-step" id="wf1"><div class="wf-dot">🔍</div><div class="wf-lbl">Record-<br/>ability</div></div>
+      <div class="wf-step" id="wf2"><div class="wf-dot">👔</div><div class="wf-lbl">Manager<br/>Approval</div></div>
+      <div class="wf-step" id="wf3"><div class="wf-dot">🗄️</div><div class="wf-lbl">SAP<br/>EHSM</div></div>
+      <div class="wf-step" id="wf4"><div class="wf-dot">📋</div><div class="wf-lbl">OSHA<br/>Forms</div></div>
+    </div>
+  </div>
+  <!-- Chat -->
+  <div class="chat" id="chat"></div>
+  <div class="vrec-label" id="vrecLabel">🎙️ Recording… speak now</div>
+  <div class="speaking-label" id="speakingLabel">🔊 Speaking…</div>
+  <!-- SAP EHSM Card -->
+  <div class="card" id="sapCard">
+    <div class="card-head" style="background:#0057c2;">🗄️ SAP S/4HANA EHSM — Incident Notification (QMEL)</div>
+    <div class="card-body">
+      <div class="sect-title">Notification Header</div>
+      <div class="fgrid" id="sapHeader"></div>
+      <div class="sect-title" style="margin-top:8px;">OSHA Relevant Fields (SAP EHSM)</div>
+      <div class="fgrid" id="sapOsha"></div>
+    </div>
+  </div>
+  <!-- OSHA Form 301 Card -->
+  <div class="card" id="f301Card">
+    <div class="card-head" style="background:#6a1b9a;">📋 OSHA Form 301 — Injury &amp; Illness Incident Report</div>
+    <div class="card-body" id="f301Body"></div>
+  </div>
+  <!-- OSHA Form 300 Card -->
+  <div class="card" id="f300Card">
+    <div class="card-head" style="background:var(--orange);">📋 OSHA Form 300 — Log of Work-Related Injuries &amp; Illnesses</div>
+    <div class="card-body" id="f300Body"></div>
+  </div>
+  <!-- Deadline Card -->
+  <div class="card" id="deadlineCard">
+    <div class="card-head" style="background:var(--red);">⏰ OSHA Reporting Deadlines</div>
+    <div class="card-body" id="deadlineBody"></div>
+  </div>
+</div>
+<!-- Sheet backdrop -->
+<div class="sheet-backdrop" id="sheetBackdrop"></div>
+
+<!-- Photo picker bottom sheet -->
+<div class="photo-sheet" id="photoSheet">
+  <div class="photo-sheet-title">Add Photo to Incident</div>
+  <div class="photo-opts">
+    <div class="photo-opt" id="optCamera">
+      <span class="opt-icon">📸</span>
+      Take Photo
+    </div>
+    <div class="photo-opt" id="optGallery">
+      <span class="opt-icon">🖼️</span>
+      Choose from Gallery
+    </div>
+  </div>
+  <button class="photo-sheet-cancel" id="photoSheetCancel">Cancel</button>
+</div>
+
+<!-- Fullscreen photo preview overlay -->
+<div class="photo-overlay" id="photoOverlay">
+  <button class="photo-overlay-close" id="photoOverlayClose">✕</button>
+  <img id="photoOverlayImg" src="" alt="Incident photo"/>
+</div>
+
+<!-- Voice mode full-screen overlay -->
+<div class="voice-mode-overlay" id="vmoOverlay">
+  <button class="vmo-close" id="vmoClose" title="Exit voice mode">✕</button>
+  <div class="vmo-orb idle" id="vmoOrb">🎙️</div>
+  <div class="vmo-status" id="vmoStatus">Tap orb to speak</div>
+  <div class="vmo-interim" id="vmoInterim"></div>
+</div>
+
+<!-- Input Bar -->
+<div class="ibar">
+  <button class="ibtn" id="photoBtn" title="Attach Photo / Take Photo">📷</button>
+  <input type="file" id="photoCameraInput" accept="image/*" capture="environment"/>
+  <input type="file" id="photoGalleryInput" accept="image/*" multiple/>
+  <textarea class="cinput" id="cinput" placeholder="Describe the incident or tap 🎤 for hands-free voice…" rows="1"></textarea>
+  <button class="ibtn" id="voiceBtn" title="Quick voice input">🎙️</button>
+  <button class="ibtn voice-mode-btn" id="voiceModeBtn" title="Hands-free voice conversation mode">🎤</button>
+  <button class="ibtn send" id="sendBtn">➤</button>
+</div>
+<footer>Made with IBM Bob · Sempra EHS · SAP S/4HANA EHSM · OSHA ITA Integration</footer>
+<script>
+'use strict';
+
+/* =========================================================
+   SEMPRA EHS — INCIDENT REPORTER
+   Data sourced from: Sempra_EHS_OSHA_Forms.xlsx
+   Sheets: OSHA Forms, Form 300, Form 300A, Form 301,
+           OSHA Reporting Requirements, SAP EHSM Mapping
+   ========================================================= */
+
+/* ── Reference Data from Sempra Spreadsheet ── */
+const OSHA_FORMS = [
+  { code:'300',  name:'Log of Work-Related Injuries and Illnesses',   deadline:'Within 7 calendar days', period:'Feb 1–Apr 30 annually', retention:'5 years + current' },
+  { code:'300A', name:'Summary of Work-Related Injuries and Illnesses',deadline:'Posted Feb 1–Apr 30',   period:'Annual summary',         retention:'5 years + current' },
+  { code:'301',  name:'Injury and Illness Incident Report',           deadline:'Within 7 calendar days', period:'Each recordable case',   retention:'5 years + current' }
+];
+
+// Recordability decision tree from "OSHA Reporting Requirements" sheet
+const RECORDABILITY_CRITERIA = [
+  { id:'death',         label:'Death',                                        sap:'ZZDEATH',    urgent:true,  deadline:'8 hours — call 1-800-321-OSHA' },
+  { id:'daysAway',      label:'Days away from work',                          sap:'ZZLTI',      urgent:false, deadline:'Within 7 days' },
+  { id:'restricted',    label:'Job transfer or restricted work',              sap:'ZZDAYSREST', urgent:false, deadline:'Within 7 days' },
+  { id:'medicalTx',     label:'Medical treatment beyond first aid',           sap:'ZZRECORD',   urgent:false, deadline:'Within 7 days' },
+  { id:'consciousness', label:'Loss of consciousness',                        sap:'ZZRECORD',   urgent:false, deadline:'Within 7 days' },
+  { id:'diagnosedHCP',  label:'Significant injury diagnosed by HCP',          sap:'ZZRECORD',   urgent:false, deadline:'Within 7 days' },
+  { id:'hospitalized',  label:'Hospitalization (1+ employees)',               sap:'ZZHOSP',     urgent:true,  deadline:'24 hours — call or online' },
+  { id:'amputation',    label:'Loss of body part / Amputation',               sap:'ZZINJTYPE',  urgent:true,  deadline:'24 hours — call or online' },
+  { id:'eyeLoss',       label:'Loss of an eye',                               sap:'ZZINJTYPE',  urgent:true,  deadline:'24 hours — call or online' },
+  { id:'nearMiss',      label:'Near miss (no injury)',                        sap:'',           urgent:false, deadline:'Internal record only' }
+];
+
+// Injury type → OSHA column mapping (from Form 300 sheet)
+const INJURY_TYPES = {
+  'Electrical Fault':      { col:'M',  label:'Injury',             sapType:'ZZINJTYPE', oshaCode:'M' },
+  'Gas Leak':              { col:'M2', label:'Respiratory Condition',sapType:'RESP',     oshaCode:'M2' },
+  'Equipment Failure':     { col:'M',  label:'Injury',             sapType:'ZZINJTYPE', oshaCode:'M' },
+  'Slip / Fall':           { col:'M',  label:'Injury',             sapType:'ZZINJTYPE', oshaCode:'M' },
+  'Vehicle Accident':      { col:'M',  label:'Injury',             sapType:'ZZINJTYPE', oshaCode:'M' },
+  'Environmental Spill':   { col:'M3', label:'Poisoning',          sapType:'POIS',      oshaCode:'M3' },
+  'Chemical Exposure':     { col:'M3', label:'Poisoning',          sapType:'POIS',      oshaCode:'M3' },
+  'Noise/Hearing':         { col:'M4', label:'Hearing Loss',       sapType:'HEAR',      oshaCode:'M4' },
+  'Skin Irritation':       { col:'M1', label:'Skin Disorder',      sapType:'SKIN',      oshaCode:'M1' },
+  'Near Miss':             { col:'-',  label:'Near Miss (non-recordable per default)', sapType:'', oshaCode:'' },
+  'Other':                 { col:'M5', label:'All Other Illnesses', sapType:'ILLOTH',   oshaCode:'M5' }
+};
+
+// SAP EHSM → OSHA field mapping (from "SAP EHSM to OSHA Forms Mapping" sheet)
+const SAP_EHSM_MAP = {
+  ZZOSHACASE:  { label:'OSHA Case #',        form:'300', col:'A', logic:'Auto-generate: YYYY-###' },
+  ENAME:       { label:'Employee Name',       form:'300/301', col:'B', logic:'Direct mapping' },
+  PLANS:       { label:'Job Title',           form:'300/301', col:'C', logic:'Direct mapping' },
+  QMDAT:       { label:'Date of Injury',      form:'300/301', col:'D', logic:'Direct mapping' },
+  STORT:       { label:'Location',            form:'300',   col:'E', logic:'Concat functional location + address' },
+  QMTXT:       { label:'Description',         form:'300/301', col:'F', logic:'Truncate to 255 chars' },
+  ZZDEATH:     { label:'Death',               form:'300',   col:'G', logic:"Map 'X' → Checked" },
+  ZZLTI:       { label:'Days Away Flag',       form:'300',   col:'H', logic:"Map 'X' if ZZDAYSAWAY > 0" },
+  ZZDAYSREST:  { label:'Restricted Work',     form:'300',   col:'I', logic:'Check if > 0' },
+  ZZRECORD:    { label:'Other Recordable',    form:'300',   col:'J', logic:'Calculated field' },
+  ZZDAYSAWAY:  { label:'# Days Away',         form:'300',   col:'K', logic:'Direct mapping (calendar days)' },
+  ZZDAYSREST2: { label:'# Days Restricted',   form:'300',   col:'L', logic:'Direct mapping (calendar days)' },
+  ZZINJTYPE:   { label:'Injury/Illness Type', form:'300',   col:'M', logic:'Injury type classification' },
+  ZZHOSP:      { label:'Hospitalized?',       form:'301',   col:'12',logic:'Yes/No flag' },
+  ZZEMERGENCY: { label:'ER Treatment?',       form:'301',   col:'11',logic:'Yes/No flag' },
+  ZZACTIVITY:  { label:'Activity Before Incident',form:'301',col:'17',logic:'Free text' },
+  ZZBODYPART:  { label:'Body Part Affected',  form:'301',   col:'19',logic:'Combined with injury type' },
+  EQUNR:       { label:'Equipment Involved',  form:'301',   col:'20',logic:'Equipment description' },
+  MZEIT:       { label:'Time of Incident',    form:'301',   col:'16',logic:'Direct mapping' }
+};
+
+// Incident types for Sempra EHS
+const INCIDENT_TYPES = ['Electrical Fault','Gas Leak','Equipment Failure','Slip / Fall',
+  'Vehicle Accident','Environmental Spill','Chemical Exposure','Near Miss','Noise/Hearing','Skin Irritation','Other'];
+
+const SEVERITY_LEVELS = ['Low — First Aid Only','Medium — Medical Treatment','High — Days Away / Hospitalized','Critical — Death / Amputation / Eye Loss'];
+
+/* ── State ── */
+const S = {
+  step: 'greeting',
+  // Form 301 fields
+  employeeName: '', jobTitle: '', dob: '', dateHired: '', gender: '',
+  // Case fields
+  incidentType: '', location: '', tplnr: '', description: '', activity: '',
+  severity: '', bodyPart: '', equipment: '',
+  // Medical
+  erTreated: '', hospitalized: '', physician: '', treatFacility: '',
+  // Recordability
+  recordable: null, recordCriteria: [],
+  daysAway: 0, daysRestricted: 0, death: false,
+  // Meta
+  photoDataUrl: null, photos: [],
+  incidentId: '', oshaCase: '',
+  reporter: 'Field Worker', timestamp: '',
+  managerName: 'J. Martinez', wfStage: 0,
+  pmNotification: '', incidentTime: ''
+};
+
+/* ── DOM ── */
+const chatEl   = document.getElementById('chat');
+const cinput   = document.getElementById('cinput');
+const sendBtn  = document.getElementById('sendBtn');
+const voiceBtn = document.getElementById('voiceBtn');
+const photoBtn = document.getElementById('photoBtn');
+const photoInput = document.getElementById('photoInput');
+const vrecLabel  = document.getElementById('vrecLabel');
+const banner     = document.getElementById('banner');
+
+/* ── Utilities ── */
+const ts  = () => new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+const esc = t  => String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const scroll = () => { chatEl.scrollTop = chatEl.scrollHeight; };
+const genId  = () => 'INC-' + Date.now().toString(36).toUpperCase().slice(-6);
+const genOshaCase = () => { const y=new Date().getFullYear(); return `${y}-${String(Math.floor(Math.random()*999)+1).padStart(3,'0')}`; };
+const genPM = () => 'PM-Q-' + Math.floor(10000000+Math.random()*90000000);
+
+function showBanner(type, msg) {
+  const icons = { urgent:'🚨', warning:'⏳', success:'✅', info:'ℹ️' };
+  banner.className = 'banner show ' + type;
+  banner.innerHTML = (icons[type]||'•') + ' ' + msg;
+}
+
+function setWf(stage) {
+  S.wfStage = stage;
+  for (let i=0;i<5;i++) {
+    const el = document.getElementById('wf'+i);
+    if (!el) continue;
+    el.className = 'wf-step' + (i < stage ? ' done' : i===stage ? ' active' : '');
+  }
+}
+
+/* ── Chat Rendering ── */
+function addMsg(role, html) {
+  const wrap = document.createElement('div');
+  wrap.className = 'msg ' + role;
+  const isBot = role === 'bot';
+  const av = document.createElement('div');
+  av.className = 'av ' + (isBot ? 'b' : 'u');
+  av.textContent = isBot ? 'SE' : 'ME';
+  const bub = document.createElement('div');
+  bub.className = 'bub';
+  bub.innerHTML = html + `<div class="ts">${ts()}</div>`;
+  if (isBot) { wrap.appendChild(av); wrap.appendChild(bub); }
+  else        { wrap.appendChild(bub); wrap.appendChild(av); }
+  chatEl.appendChild(wrap);
+  scroll();
+  // TTS: speak bot messages if enabled (ttsSpeak defined later; safe — called at runtime not parse time)
+  if (isBot) {
+    try {
+      const clean = typeof ttsClean === 'function' ? ttsClean(html) : '';
+      if (clean) ttsSpeak(clean);
+    } catch(e) {}
+  }
+  return wrap;
+}
+
+function addQR(opts) {
+  const div = document.createElement('div');
+  div.className = 'qrs';
+  opts.forEach(opt => {
+    const b = document.createElement('button');
+    b.className = 'qr'; b.textContent = opt;
+    b.onclick = () => {
+      div.remove();
+      ttsStop();          // stop bot speaking immediately when user picks an answer
+      onUserInput(opt);
+    };
+    div.appendChild(b);
+  });
+  chatEl.appendChild(div); scroll();
+}
+
+function typing(cb, delay=750) {
+  const w = document.createElement('div');
+  w.className = 'msg bot';
+  w.innerHTML = `<div class="av b">SE</div><div class="bub"><div class="typing"><span></span><span></span><span></span></div></div>`;
+  chatEl.appendChild(w); scroll();
+  setTimeout(()=>{ w.remove(); cb(); }, delay);
+}
+
+function say(html, qr, delay=700) {
+  // TTS is handled inside addMsg() when the bubble appears — do NOT also call it here
+  // (calling it in both say() and addMsg() causes every bot message to be spoken twice)
+  typing(()=>{ addMsg('bot', html); if(qr) addQR(qr); }, delay);
+}
+
+/* ── Conversation Engine ── */
+function onUserInput(text) {
+  ttsStop();              // stop any in-progress speech the moment user submits input
+  // In voice mode: keep vmoPaused=true so mic doesn't open until the bot's
+  // NEXT response finishes speaking. vmResumeAfterSpeech() will clear it.
+  addMsg('user', esc(text));
+  handleStep(text.trim());
+}
+
+function handleStep(input) {
+  const lo = input.toLowerCase();
+  switch(S.step) {
+
+    /* ── Greeting ── */
+    case 'greeting':
+      if (lo.match(/yes|report|new|start|incident/)) {
+        S.step = 'emp_name'; S.timestamp = new Date().toISOString();
+        say(`Welcome to <strong>Sempra EHS Field Incident Reporter</strong>.<br><br>I'll collect details to complete <strong>OSHA Form 301</strong> (Injury & Illness Incident Report) and <strong>OSHA Form 300</strong> (Log of Work-Related Injuries & Illnesses), then create a record in <strong>SAP S/4HANA EHSM</strong>.<br><br>First — what is the <strong>name of the injured/affected employee</strong>? (Or your own name if you are the only person involved.)`);
+      } else if (lo.match(/check|look.?up|existing|status/)) {
+        S.step = 'check_id';
+        say(`Please enter the <strong>Incident ID or OSHA Case #</strong> to look up (e.g. INC-AB12CD or 2024-042).`);
+      } else {
+        say(`Are you reporting a new incident or looking up an existing one?`, ['Report New Incident','Look Up Existing Incident']);
+      }
+      break;
+
+    case 'check_id':
+      say(`🔍 Looking up <strong>${esc(input)}</strong> in SAP S/4HANA EHSM…<br><br>
+        <table style="font-size:11.5px;border-collapse:collapse;width:100%">
+          <tr><td style="padding:3px 8px;color:var(--muted)">Status</td><td style="padding:3px 8px;font-weight:700;color:var(--green)">✅ Approved — QMEL Created</td></tr>
+          <tr><td style="padding:3px 8px;color:var(--muted)">OSHA Case</td><td style="padding:3px 8px;font-weight:600">${esc(input)}</td></tr>
+          <tr><td style="padding:3px 8px;color:var(--muted)">Forms Filed</td><td style="padding:3px 8px;font-weight:600">Form 300 ✅ · Form 301 ✅</td></tr>
+          <tr><td style="padding:3px 8px;color:var(--muted)">SAP EHSM</td><td style="padding:3px 8px;font-weight:600">QMEL Record: OSNO NOCO</td></tr>
+        </table>`, ['Report New Incident']);
+      S.step = 'done';
+      break;
+
+    /* ── OSHA Form 301: Employee Info ── */
+    case 'emp_name':
+      S.employeeName = input;
+      S.step = 'job_title';
+      say(`Got it — <strong>${esc(input)}</strong>.<br><br>📋 <em>OSHA Form 301, Field 1</em><br>What is their <strong>job title</strong>? (e.g. Line Technician, Field Inspector)`);
+      break;
+
+    case 'job_title':
+      S.jobTitle = input;
+      S.step = 'incident_type';
+      say(`Job title: <strong>${esc(input)}</strong>.<br><br>Now let's capture the incident details.<br><br>⚠️ <strong>What type of incident</strong> occurred?`, INCIDENT_TYPES);
+      break;
+
+    case 'incident_type':
+      S.incidentType = input;
+      S.step = 'incident_time';
+      say(`Incident type: <strong>${esc(input)}</strong>.<br><br>📋 <em>OSHA Form 301, Field 16</em><br>What <strong>time did the event occur</strong>? (e.g. 2:30 PM)`);
+      break;
+
+    case 'incident_time':
+      S.incidentTime = input;
+      S.step = 'location';
+      say(`Time recorded: <strong>${esc(input)}</strong>.<br><br>📋 <em>OSHA Form 301 — Location on premises</em><br>📍 <strong>Where did this occur?</strong> Please provide the location, functional location, or asset ID.<br>(e.g. "Substation A, Bay 3" or "Gas Station #12 — Underground vault")`);
+      break;
+
+    case 'location':
+      S.location = input; S.tplnr = input.substring(0,30);
+      S.step = 'activity';
+      say(`Location: <strong>${esc(input)}</strong>.<br><br>📋 <em>OSHA Form 301, Field 17</em><br>🔧 <strong>What was the employee doing just before the incident?</strong><br>(e.g. "Cutting underground cable with power saw")`);
+      break;
+
+    case 'activity':
+      S.activity = input;
+      S.step = 'description';
+      say(`Activity recorded.<br><br>📋 <em>OSHA Form 301, Field 18</em><br>🗒️ <strong>What happened?</strong> Describe the incident in detail.<br>You can also tap 🎙️ to speak.`);
+      break;
+
+    case 'description':
+      S.description = input;
+      S.step = 'body_part';
+      say(`Description noted.<br><br>📋 <em>OSHA Form 301, Field 19</em><br>🏥 <strong>What was the injury or illness, and what body part was affected?</strong><br>(e.g. "Deep laceration to left hand" or "None — near miss")`);
+      break;
+
+    case 'body_part':
+      S.bodyPart = input;
+      S.step = 'equipment';
+      say(`Noted: <em>${esc(input)}</em>.<br><br>📋 <em>OSHA Form 301, Field 20</em><br>🔩 <strong>What object or substance directly harmed the employee?</strong><br>(e.g. "Power saw blade — Equipment #CUTSAW-001" or "N/A")`);
+      break;
+
+    case 'equipment':
+      S.equipment = input;
+      S.step = 'er_treated';
+      say(`Recorded.<br><br>📋 <em>OSHA Form 301, Field 11</em><br>🏥 <strong>Was the employee treated in an emergency room?</strong>`, ['Yes — ER treated','No — Outpatient / First Aid','No Medical Treatment']);
+      break;
+
+    case 'er_treated':
+      S.erTreated = lo.includes('yes') || lo.includes('er') ? 'Yes' : 'No';
+      S.step = 'hospitalized';
+      say(`ER Treatment: <strong>${S.erTreated}</strong>.<br><br>📋 <em>OSHA Form 301, Field 12</em><br>🏨 <strong>Was the employee hospitalized overnight?</strong>`, ['Yes — Overnight hospitalization','No']);
+      break;
+
+    case 'hospitalized':
+      S.hospitalized = lo.includes('yes') || lo.includes('hosp') ? 'Yes' : 'No';
+      S.step = 'severity';
+      say(`Hospitalized: <strong>${S.hospitalized}</strong>.<br><br>Now let's determine <strong>OSHA recordability</strong>.<br><br>⚠️ <strong>What is the overall severity of this incident?</strong>`, SEVERITY_LEVELS);
+      break;
+
+    case 'severity':
+      S.severity = input;
+      // Auto-detect recordability criteria
+      S.recordCriteria = [];
+      if (lo.includes('critical') || lo.includes('death')) { S.death = true; S.recordCriteria.push('death'); }
+      if (lo.includes('days away') || lo.includes('high')) S.recordCriteria.push('daysAway');
+      if (S.hospitalized === 'Yes') S.recordCriteria.push('hospitalized');
+      if (S.erTreated === 'Yes' || lo.includes('medical')) S.recordCriteria.push('medicalTx');
+      if (S.bodyPart.toLowerCase() !== 'none' && !S.bodyPart.toLowerCase().includes('near')) S.recordCriteria.push('medicalTx');
+      if (lo.includes('amputation') || lo.includes('eye') || lo.includes('body part')) S.recordCriteria.push('amputation');
+      // Near miss = non-recordable by default
+      S.recordable = S.incidentType !== 'Near Miss' && S.recordCriteria.length > 0;
+      S.step = 'days_away';
+      say(`Severity: <strong>${esc(input)}</strong>.<br><br>📋 <em>OSHA Form 300, Column K</em><br>📅 <strong>How many calendar days was / will the employee be away from work?</strong><br>(Enter 0 if none)`);
+      break;
+
+    case 'days_away':
+      S.daysAway = parseInt(input) || 0;
+      if (S.daysAway > 0) S.recordCriteria.push('daysAway');
+      S.step = 'days_restricted';
+      say(`Days away: <strong>${S.daysAway}</strong>.<br><br>📋 <em>OSHA Form 300, Column L</em><br>🔄 <strong>How many calendar days of job transfer or restricted work?</strong><br>(Enter 0 if none)`);
+      break;
+
+    case 'days_restricted':
+      S.daysRestricted = parseInt(input) || 0;
+      if (S.daysRestricted > 0) S.recordCriteria.push('restricted');
+      // Final recordability determination
+      S.recordable = S.incidentType !== 'Near Miss' && S.recordCriteria.length > 0;
+      S.step = 'photo';
+      showRecordabilityResult();
+      break;
+
+    case 'photo':
+      if (lo.match(/skip|no|next/)) {
+        S.step = 'confirm';
+        showSummary();
+      } else if (lo.match(/attach|photo|yes|take/)) {
+        photoInput.click();
+      } else {
+        S.step = 'confirm';
+        showSummary();
+      }
+      break;
+
+    case 'confirm':
+      if (lo.match(/submit|yes|confirm/)) {
+        submitIncident();
+      } else if (lo.match(/edit|change|no/)) {
+        S.step = 'incident_type';
+        say(`Let's update the incident details. <strong>What type of incident</strong> occurred?`, INCIDENT_TYPES);
+      } else {
+        say(`Please confirm to submit or edit.`, ['Submit Incident','Edit Details']);
+      }
+      break;
+
+    case 'approval':
+      if (lo.match(/approv|yes/)) { approveIncident(); }
+      else if (lo.match(/reject|no/)) { rejectIncident(); }
+      else { say(`Awaiting manager action:`, ['Approve','Reject']); }
+      break;
+
+    case 'done':
+      // User responded after full completion — handle yes/no/thank you
+      if (lo.match(/yes|new|another|report|start/)) {
+        say(`Starting a new incident report. Let's begin.<br><br>What is the <strong>name of the injured/affected employee</strong>?`);
+        resetState();
+        S.step = 'emp_name';
+        S.timestamp = new Date().toISOString();
+      } else {
+        // No / thank you / done / any other response — close gracefully
+        say(`Thank you for using the <strong>Sempra EHS Field Incident Reporter</strong>. 🙏<br><br>
+          Your incident <strong>${S.incidentId || ''}</strong> has been fully recorded.<br><br>
+          Stay safe out there. If you need to report another incident at any time, just refresh the page or tap below.`,
+          ['Report New Incident']);
+        S.step = 'thanked';
+      }
+      break;
+
+    case 'thanked':
+      // Any input after thank-you — offer to start fresh
+      if (lo.match(/yes|new|another|report|start/)) {
+        resetState();
+        S.step = 'emp_name';
+        S.timestamp = new Date().toISOString();
+        say(`Let's begin a new report.<br><br>What is the <strong>name of the injured/affected employee</strong>?`);
+      } else {
+        say(`Whenever you're ready to report a new incident, tap below.`, ['Report New Incident']);
+      }
+      break;
+
+    default:
+      // Catch-all — only reset if genuinely stuck, not during active flow
+      if (!S.step || S.step === '') {
+        resetState();
+        say(`Ready to start. Are you reporting a new incident?`, ['Report New Incident', 'Look Up Existing Incident']);
+      }
+  }
+}
+
+/* ── Recordability Check (OSHA Decision Tree) ── */
+function showRecordabilityResult() {
+  const uniqueCriteria = [...new Set(S.recordCriteria)];
+  const urgentCriteria = uniqueCriteria.filter(c => RECORDABILITY_CRITERIA.find(r=>r.id===c && r.urgent));
+  const critMatched = uniqueCriteria.map(c => {
+    const r = RECORDABILITY_CRITERIA.find(x=>x.id===c);
+    return r ? `<li>${r.label} <em style="color:var(--muted);font-size:10px;">(SAP: ${r.sap})</em></li>` : '';
+  }).join('');
+
+  const badge = S.recordable
+    ? `<span class="rec-badge yes">⚠️ OSHA RECORDABLE</span>`
+    : `<span class="rec-badge no">✅ Not Recordable (Per OSHA Decision Tree)</span>`;
+
+  let urgentHtml = '';
+  if (urgentCriteria.length > 0) {
+    const r = RECORDABILITY_CRITERIA.find(x => x.id === urgentCriteria[0]);
+    urgentHtml = `<br><div style="background:#fff0f0;border:1px solid #ffb3b3;border-radius:6px;padding:8px;margin-top:6px;font-size:12px;color:var(--red)">
+      🚨 <strong>URGENT:</strong> ${r.deadline}
+    </div>`;
+  }
+
+  const nearMissNote = S.incidentType === 'Near Miss'
+    ? `<br><em style="font-size:11px;color:var(--muted)">Near Miss incidents are not OSHA recordable but must be documented internally.</em>` : '';
+
+  typing(() => {
+    addMsg('bot', `🔍 <strong>OSHA Recordability Assessment</strong><br><br>
+      ${badge}<br><br>
+      ${uniqueCriteria.length > 0 ? `<strong>Criteria triggered:</strong><ul style="margin:4px 0 0 16px;font-size:12px">${critMatched}</ul>` : 'No recordability criteria triggered.'}
+      ${nearMissNote}${urgentHtml}
+      <br>📷 Would you like to <strong>attach a photo</strong> of the scene?`);
+    addQR(['Attach Photo','Skip Photo']);
+    setWf(1);
+    if (urgentCriteria.length > 0) showBanner('urgent', 'Urgent OSHA deadline triggered — see deadline card after submission');
+    else if (S.recordable) showBanner('warning', 'OSHA recordable incident — Forms 300 & 301 required within 7 days');
+    else showBanner('info', 'Incident logged — OSHA recordability not triggered');
+  });
+}
+
+/* ── Summary ── */
+function showSummary() {
+  const photoHtml = S.photoDataUrl
+    ? `<br><img src="${S.photoDataUrl}" class="photo-prev" alt="Scene photo"/>`
+    : `<br><em style="color:var(--muted);font-size:11px;">No photo attached</em>`;
+
+  const itype = INJURY_TYPES[S.incidentType] || { col:'M5', label:'Other' };
+
+  say(`Here is the <strong>incident summary</strong> for your review:<br><br>
+    <table style="font-size:11.5px;border-collapse:collapse;width:100%">
+      <tr style="background:#f7f8fa"><td colspan="2" style="padding:4px 7px;font-weight:700;font-size:11px;color:var(--muted)">EMPLOYEE (Form 301, §1–8)</td></tr>
+      <tr><td style="padding:3px 7px;color:var(--muted)">Name</td><td style="padding:3px 7px;font-weight:600">${esc(S.employeeName)}</td></tr>
+      <tr><td style="padding:3px 7px;color:var(--muted)">Job Title</td><td style="padding:3px 7px">${esc(S.jobTitle)}</td></tr>
+      <tr style="background:#f7f8fa"><td colspan="2" style="padding:4px 7px;font-weight:700;font-size:11px;color:var(--muted)">INCIDENT (Form 301, §13–21 / Form 300 Cols A–F)</td></tr>
+      <tr><td style="padding:3px 7px;color:var(--muted)">Type</td><td style="padding:3px 7px;font-weight:600">${esc(S.incidentType)}</td></tr>
+      <tr><td style="padding:3px 7px;color:var(--muted)">Time</td><td style="padding:3px 7px">${esc(S.incidentTime)}</td></tr>
+      <tr><td style="padding:3px 7px;color:var(--muted)">Location (STORT/TPLNR)</td><td style="padding:3px 7px">${esc(S.location)}</td></tr>
+      <tr><td style="padding:3px 7px;color:var(--muted)">Activity (F.17)</td><td style="padding:3px 7px">${esc(S.activity)}</td></tr>
+      <tr><td style="padding:3px 7px;color:var(--muted)">Description (QMTXT)</td><td style="padding:3px 7px">${esc(S.description)}</td></tr>
+      <tr><td style="padding:3px 7px;color:var(--muted)">Injury/Body Part</td><td style="padding:3px 7px">${esc(S.bodyPart)}</td></tr>
+      <tr><td style="padding:3px 7px;color:var(--muted)">OSHA Column</td><td style="padding:3px 7px">${itype.col} — ${itype.label}</td></tr>
+      <tr><td style="padding:3px 7px;color:var(--muted)">Equipment (EQUNR)</td><td style="padding:3px 7px">${esc(S.equipment)}</td></tr>
+      <tr style="background:#f7f8fa"><td colspan="2" style="padding:4px 7px;font-weight:700;font-size:11px;color:var(--muted)">MEDICAL (Form 301, §9–12)</td></tr>
+      <tr><td style="padding:3px 7px;color:var(--muted)">ER Treated</td><td style="padding:3px 7px">${esc(S.erTreated)}</td></tr>
+      <tr><td style="padding:3px 7px;color:var(--muted)">Hospitalized</td><td style="padding:3px 7px">${esc(S.hospitalized)}</td></tr>
+      <tr style="background:#f7f8fa"><td colspan="2" style="padding:4px 7px;font-weight:700;font-size:11px;color:var(--muted)">OSHA RECORD (Form 300 Cols G–M)</td></tr>
+      <tr><td style="padding:3px 7px;color:var(--muted)">Recordable?</td><td style="padding:3px 7px;font-weight:700;color:${S.recordable?'var(--red)':'var(--green)'}">${S.recordable?'⚠️ Yes':'✅ No'}</td></tr>
+      <tr><td style="padding:3px 7px;color:var(--muted)">Days Away (Col K)</td><td style="padding:3px 7px">${S.daysAway}</td></tr>
+      <tr><td style="padding:3px 7px;color:var(--muted)">Days Restricted (Col L)</td><td style="padding:3px 7px">${S.daysRestricted}</td></tr>
+    </table>${photoHtml}<br>
+    Ready to <strong>submit</strong> for manager approval?`, ['Submit Incident','Edit Details']);
+}
+
+/* ── Submit ── */
+function submitIncident() {
+  S.incidentId = genId();
+  S.oshaCase   = genOshaCase();
+  S.step = 'approval';
+  setWf(2);
+  showBanner('warning', `${S.incidentId} submitted — awaiting ${S.managerName}'s approval`);
+
+  say(`✅ Incident <strong>${S.incidentId}</strong> submitted.<br><br>
+    📤 Routing to <strong>${S.managerName}</strong> via <strong>SAP Build Process Automation</strong> (HITL workflow).<br><br>
+    <em style="font-size:11.5px;color:var(--muted)">In production: triggers SAP BTP workflow → Fiori Launchpad inbox → email notification via Amazon SNS. Session state stored in Amazon DynamoDB.</em>`);
+
+  setTimeout(() => {
+    say(`📬 <strong>${S.managerName}</strong> notified. Simulate their response:`, ['Approve','Reject'], 1200);
+  }, 2000);
+}
+
+function approveIncident() {
+  setWf(3);
+  showBanner('success', `Approved by ${S.managerName} — creating SAP EHSM QMEL record`);
+  say(`✅ <strong>${S.managerName}</strong> has <span style="color:var(--green);font-weight:700">approved</span> the incident.<br><br>🗄️ Creating <strong>SAP S/4HANA EHSM</strong> Incident Notification (QMEL)…`);
+  setTimeout(createSapRecord, 1400);
+}
+
+function rejectIncident() {
+  S.step = 'confirm';
+  showBanner('warning', `Rejected by ${S.managerName} — additional details required`);
+  say(`🚫 <strong>${S.managerName}</strong> has <span style="color:var(--red);font-weight:700">rejected</span> the report and requested additional information.<br><br>Please revise and resubmit.`, ['Edit Details']);
+}
+
+/* ── SAP EHSM Record ── */
+function createSapRecord() {
+  S.pmNotification = genPM();
+  const itype = INJURY_TYPES[S.incidentType] || { col:'M5', label:'Other', sapType:'ILLOTH' };
+  const wbsEl = `SE-EHSM-${new Date().getFullYear()}-OPS`;
+
+  document.getElementById('sapCard').classList.add('show');
+
+  document.getElementById('sapHeader').innerHTML = `
+    <div class="field"><label>QMEL Notification #</label><span>${S.pmNotification}</span></div>
+    <div class="field"><label>Incident ID</label><span>${S.incidentId}</span></div>
+    <div class="field"><label>Notification Type</label><span>A2 — Incident</span></div>
+    <div class="field"><label>Priority</label><span>${S.severity.split('—')[0].trim()}</span></div>
+    <div class="field"><label>Functional Location (TPLNR)</label><span>${esc(S.tplnr)}</span></div>
+    <div class="field"><label>Short Text (QMTXT)</label><span>${esc(S.description.substring(0,40))}…</span></div>
+    <div class="field"><label>Reported By</label><span>${esc(S.reporter)}</span></div>
+    <div class="field"><label>WBS Element</label><span>${wbsEl}</span></div>
+    <div class="field"><label>System Status</label><span class="tag-green">OSNO NOCO</span></div>
+    <div class="field"><label>Created On</label><span>${new Date().toLocaleDateString()}</span></div>`;
+
+  document.getElementById('sapOsha').innerHTML = `
+    <div class="field"><label>ZZOSHACASE</label><span>${S.oshaCase}</span></div>
+    <div class="field"><label>ENAME (Employee)</label><span>${esc(S.employeeName)}</span></div>
+    <div class="field"><label>PLANS (Job Title)</label><span>${esc(S.jobTitle)}</span></div>
+    <div class="field"><label>QMDAT (Date)</label><span>${new Date(S.timestamp).toLocaleDateString()}</span></div>
+    <div class="field"><label>MZEIT (Time)</label><span>${esc(S.incidentTime)}</span></div>
+    <div class="field"><label>ZZINJTYPE</label><span>${itype.sapType || 'ZZINJTYPE'}</span></div>
+    <div class="field"><label>ZZDAYSAWAY (Col K)</label><span>${S.daysAway}</span></div>
+    <div class="field"><label>ZZDAYSREST (Col L)</label><span>${S.daysRestricted}</span></div>
+    <div class="field"><label>ZZLTI (Days Away Flag)</label><span>${S.daysAway>0 ? 'X':'—'}</span></div>
+    <div class="field"><label>ZZDEATH</label><span class="${S.death?'tag-red':''}">${S.death?'X':'—'}</span></div>
+    <div class="field"><label>ZZEMERGENCY (ER)</label><span>${S.erTreated==='Yes'?'X':'—'}</span></div>
+    <div class="field"><label>ZZHOSP</label><span>${S.hospitalized==='Yes'?'X':'—'}</span></div>`;
+
+  setWf(4);
+  showBanner('success', `SAP EHSM ${S.pmNotification} created — generating OSHA forms`);
+  say(`🗄️ <strong>SAP EHSM Notification ${S.pmNotification}</strong> created successfully.<br><br>📋 Generating OSHA forms based on recordability assessment…`);
+  setTimeout(generateOshaForms, 1600);
+}
+
+/* ── OSHA Forms ── */
+function generateOshaForms() {
+  const itype = INJURY_TYPES[S.incidentType] || { col:'M5', label:'Other' };
+  const today = new Date().toLocaleDateString();
+  const incDate = new Date(S.timestamp).toLocaleDateString();
+
+  /* Form 301 */
+  document.getElementById('f301Card').classList.add('show');
+  document.getElementById('f301Body').innerHTML = `
+    <div class="sect-title">§ Employee Information (Fields 1–8)</div>
+    <div class="fgrid">
+      <div class="field"><label>1. Full Name (ENAME)</label><span>${esc(S.employeeName)}</span></div>
+      <div class="field"><label>7. Date Hired (EINDT)</label><span>On File</span></div>
+      <div class="field"><label>8. Gender (GESCH)</label><span>On File</span></div>
+      <div class="field"><label>Job Title (PLANS)</label><span>${esc(S.jobTitle)}</span></div>
+    </div>
+    <div class="sect-title" style="margin-top:8px">§ Medical (Fields 9–12)</div>
+    <div class="fgrid">
+      <div class="field"><label>11. ER Treated? (ZZEMERGENCY)</label><span>${esc(S.erTreated)}</span></div>
+      <div class="field"><label>12. Hospitalized? (ZZHOSP)</label><span>${esc(S.hospitalized)}</span></div>
+    </div>
+    <div class="sect-title" style="margin-top:8px">§ Case Information (Fields 13–21)</div>
+    <div class="fgrid">
+      <div class="field"><label>13. Case # from Form 300 (ZZOSHACASE)</label><span>${S.oshaCase}</span></div>
+      <div class="field"><label>14. Date of Injury (QMDAT)</label><span>${incDate}</span></div>
+      <div class="field"><label>16. Time of Event (MZEIT)</label><span>${esc(S.incidentTime)}</span></div>
+      <div class="field"><label>17. Activity Before (ZZACTIVITY)</label><span>${esc(S.activity.substring(0,35))}</span></div>
+    </div>
+    <div class="fgrid single" style="margin-top:4px">
+      <div class="field"><label>18. What Happened? (QMTXT)</label><span>${esc(S.description)}</span></div>
+      <div class="field"><label>19. Injury / Body Part (ZZINJTYPE+ZZBODYPART)</label><span>${esc(S.bodyPart)}</span></div>
+      <div class="field"><label>20. Object/Substance (EQUNR)</label><span>${esc(S.equipment)}</span></div>
+    </div>
+    <div class="sect-title" style="margin-top:8px">§ Location</div>
+    <div class="fgrid single">
+      <div class="field"><label>Location on Premises (STORT + TPLNR)</label><span>${esc(S.location)}</span></div>
+      <div class="field"><label>On employer premises?</label><span>Yes</span></div>
+    </div>
+    <button class="action-btn primary" onclick="submitForm('301')">📤 Submit Form 301 to SAP EHSM / OSHA ITA</button>`;
+
+  /* Form 300 */
+  if (S.recordable) {
+    document.getElementById('f300Card').classList.add('show');
+    document.getElementById('f300Body').innerHTML = `
+      <div class="sect-title">Form 300 Entry — Log Columns A–M</div>
+      <div class="fgrid">
+        <div class="field"><label>(A) Case # (ZZOSHACASE)</label><span>${S.oshaCase}</span></div>
+        <div class="field"><label>(B) Employee Name (ENAME)</label><span>${esc(S.employeeName)}</span></div>
+        <div class="field"><label>(C) Job Title (PLANS)</label><span>${esc(S.jobTitle)}</span></div>
+        <div class="field"><label>(D) Date of Injury (QMDAT)</label><span>${incDate}</span></div>
+        <div class="field"><label>(E) Location (STORT+TPLNR)</label><span>${esc(S.location.substring(0,25))}</span></div>
+        <div class="field"><label>(G) Death (ZZDEATH)</label><span class="${S.death?'tag-red':''}">${S.death?'☑ YES':'☐ No'}</span></div>
+        <div class="field"><label>(H) Days Away (ZZLTI)</label><span>${S.daysAway>0?'☑ Yes':'☐ No'}</span></div>
+        <div class="field"><label>(I) Restricted (ZZDAYSREST)</label><span>${S.daysRestricted>0?'☑ Yes':'☐ No'}</span></div>
+        <div class="field"><label>(J) Other Recordable (ZZRECORD)</label><span>${S.recordable&&S.daysAway===0&&S.daysRestricted===0?'☑ Yes':'☐ No'}</span></div>
+        <div class="field"><label>(K) # Days Away (ZZDAYSAWAY)</label><span>${S.daysAway}</span></div>
+        <div class="field"><label>(L) # Days Restricted (ZZDAYSREST)</label><span>${S.daysRestricted}</span></div>
+        <div class="field"><label>(M) Injury/Illness Column</label><span>${itype.col} — ${itype.label}</span></div>
+      </div>
+      <div class="fgrid single" style="margin-top:4px">
+        <div class="field"><label>(F) Describe Injury (QMTXT)</label><span>${esc(S.description.substring(0,120))}</span></div>
+      </div>
+      <div style="margin-top:10px;font-size:11.5px;background:#f7f8fa;border:1px solid var(--border);border-radius:6px;padding:8px 10px;">
+        <strong>📅 Form 300A Note:</strong> Annual summary must be <strong>posted Feb 1–Apr 30</strong> each year, signed by company executive (CEO/President/VP). Totals aggregate from all Form 300 entries via SAP EHSM QMEL records.
+      </div>
+      <button class="action-btn orange" style="margin-top:8px" onclick="submitForm('300')">📤 Submit Form 300 Log Entry to SAP EHSM / OSHA ITA</button>`;
+  }
+
+  /* Deadline card */
+  buildDeadlineCard();
+
+  const formList = S.recordable ? 'Form 301 <em>and</em> Form 300 log entry' : 'Form 301';
+  const urgentMsg = (S.death || S.hospitalized==='Yes') ? `<br><br>🚨 <span style="color:var(--red);font-weight:700">URGENT: ${S.death?'Fatality — report to OSHA within 8 hours (1-800-321-OSHA)':'Hospitalization — report to OSHA within 24 hours'}.</span>` : '';
+
+  say(`📋 <strong>OSHA ${formList}</strong> pre-filled from SAP EHSM field mapping.<br><br>
+    ${S.recordable ? `<span class="rec-badge yes">⚠️ OSHA RECORDABLE</span> — must be filed within <strong>7 calendar days</strong>.` : `<span class="rec-badge no">ℹ️ Not Recordable</span> — Form 301 filed internally, Form 300 entry not required.`}
+    ${urgentMsg}<br><br>Review the forms above and tap <strong>Submit</strong>.`);
+
+  S.step = 'done';
+  setTimeout(() => {
+    say(`🎉 Incident <strong>${S.incidentId}</strong> fully processed through Sempra EHS workflow!<br><br>
+      ✅ SAP EHSM QMEL: <strong>${S.pmNotification}</strong><br>
+      ✅ OSHA Case: <strong>${S.oshaCase}</strong><br>
+      ✅ OSHA Form 301: Ready<br>
+      ${S.recordable ? `✅ OSHA Form 300 log entry: Ready<br>` : ''}
+      <br>Would you like to report another incident?`, ['Yes — Report New Incident', 'No — I\'m Done'], 1200);
+  }, 4000);
+}
+
+function buildDeadlineCard() {
+  document.getElementById('deadlineCard').classList.add('show');
+  const lines = [];
+
+  // Determine which deadlines apply
+  if (S.death) lines.push({ cls:'urgent', text:'☎️ <strong>Fatality:</strong> Call 1-800-321-OSHA or report online within <strong>8 hours</strong>' });
+  if (S.hospitalized==='Yes') lines.push({ cls:'urgent', text:'🏥 <strong>Hospitalization:</strong> Report to OSHA within <strong>24 hours</strong>' });
+  if (S.recordable) lines.push({ cls:'warning', text:'📋 <strong>Form 300 &amp; 301:</strong> Complete and file within <strong>7 calendar days</strong> of learning of injury' });
+  lines.push({ cls:'ok', text:'📅 <strong>Form 300A Annual Summary:</strong> Post Feb 1–Apr 30 annually — retain for <strong>5 years</strong>' });
+  if (!S.recordable) lines.push({ cls:'ok', text:'ℹ️ <strong>Form 301:</strong> Filed internally — not required to submit to OSHA (non-recordable)' });
+
+  document.getElementById('deadlineBody').innerHTML = lines.map(l =>
+    `<div class="deadline-box ${l.cls}">${l.text}</div>`
+  ).join('');
+}
+
+function submitForm(formNum) {
+  const btn = event.target;
+  btn.textContent = `✅ Form ${formNum} Submitted to OSHA ITA`;
+  btn.className = 'action-btn green';
+  btn.disabled = true;
+  showBanner('success', `OSHA Form ${formNum} (Case ${S.oshaCase}) submitted to OSHA ITA`);
+  typing(() => {
+    addMsg('bot', `✅ <strong>OSHA Form ${formNum}</strong> (Case <strong>${S.oshaCase}</strong>) submitted electronically to the <strong>OSHA Injury Tracking Application (ITA)</strong>.<br><br>
+      SAP EHSM QMEL <strong>${S.pmNotification}</strong> updated with submission timestamp.<br><br>
+      <em style="font-size:11px;color:var(--muted)">Production integration: SAP BTP → OSHA ITA REST API → SAP EHSM status update → Amazon EventBridge → audit trail in Amazon CloudWatch.</em>`);
+  }, 600);
+}
+
+/* ── Text-to-Speech (Web Speech API — SpeechSynthesis) ── */
+let ttsEnabled = false;        // off by default; user must opt in
+let ttsSpeaking = false;
+let ttsQueue = [];             // queue so rapid say() calls don't overlap
+let ttsCancelledByUser = false;// true when user interrupts — suppresses auto-resume
+
+const ttsBtn      = document.getElementById('ttsBtn');
+const speakLabel  = document.getElementById('speakingLabel');
+
+// Strip HTML tags and emoji clusters to get clean plain text for the voice
+function ttsClean(html) {
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  return (tmp.textContent || tmp.innerText || '')
+    .replace(/[^\x00-\x7F\u00C0-\u024F\u1E00-\u1EFF .,?!:;\-\n]/g, '') // strip emoji
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function ttsSpeak(text) {
+  if (!ttsEnabled || !('speechSynthesis' in window)) return;
+  ttsQueue.push(text);
+  if (!ttsSpeaking) ttsFlush();
+}
+
+function ttsFlush() {
+  if (ttsQueue.length === 0) { ttsSetSpeaking(false); return; }
+  const text = ttsQueue.shift();
+  if (!text) { ttsFlush(); return; }
+
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang  = 'en-US';
+  utt.rate  = 0.95;   // slightly slower for field clarity
+  utt.pitch = 1.0;
+  utt.volume= 1.0;
+
+  // Prefer a clear female US voice if available
+  const voices = window.speechSynthesis.getVoices();
+  const preferred = voices.find(v => v.lang === 'en-US' && /samantha|aria|zira|susan|karen/i.test(v.name))
+                 || voices.find(v => v.lang === 'en-US')
+                 || voices[0];
+  if (preferred) utt.voice = preferred;
+
+  utt.onstart = () => ttsSetSpeaking(true);
+  utt.onend   = () => ttsFlush();
+  utt.onerror = () => ttsFlush();
+
+  ttsSetSpeaking(true);
+  window.speechSynthesis.speak(utt);
+}
+
+function ttsSetSpeaking(active) {
+  ttsSpeaking = active;
+  if (active) {
+    ttsBtn.className = 'tts-btn tts-on tts-speaking';
+    speakLabel.classList.add('show');
+    // Voice mode: show speaking orb
+    if (typeof voiceMode !== 'undefined' && voiceMode) {
+      try { setOrb('speak', 'Speaking…', ''); } catch(e) {}
+    }
+  } else {
+    ttsBtn.className = ttsEnabled ? 'tts-btn tts-on' : 'tts-btn';
+    speakLabel.classList.remove('show');
+    // Voice mode: only auto-resume if speech ended naturally (not cancelled by user input)
+    if (typeof voiceMode !== 'undefined' && voiceMode && !ttsCancelledByUser) {
+      try { vmResumeAfterSpeech(); } catch(e) {}
+    }
+    ttsCancelledByUser = false; // reset flag after handling
+  }
+}
+
+function ttsStop() {
+  ttsCancelledByUser = true;   // flag: user interrupted — don't auto-resume yet
+  window.speechSynthesis.cancel();
+  ttsQueue = [];
+  ttsSetSpeaking(false);
+}
+
+// Toggle on/off via shell bar button
+ttsBtn.addEventListener('click', () => {
+  ttsEnabled = !ttsEnabled;
+  if (ttsEnabled) {
+    ttsBtn.className = 'tts-btn tts-on';
+    ttsBtn.title = 'Bot voice ON — tap to mute';
+    ttsBtn.textContent = '🔊';
+    // Speak a short confirmation so user knows it's working
+    const confirm = new SpeechSynthesisUtterance('Bot voice enabled.');
+    confirm.lang = 'en-US'; confirm.rate = 0.95;
+    const voices = window.speechSynthesis.getVoices();
+    const v = voices.find(x => x.lang==='en-US') || voices[0];
+    if (v) confirm.voice = v;
+    window.speechSynthesis.speak(confirm);
+  } else {
+    ttsStop();
+    ttsBtn.className = 'tts-btn';
+    ttsBtn.title = 'Bot voice OFF — tap to enable';
+    ttsBtn.textContent = '🔇';
+  }
+});
+
+// Voices load asynchronously in some browsers
+window.speechSynthesis.onvoiceschanged = () => {};
+
+// TTS hooks are embedded directly inside say() and addMsg() above — no re-declaration needed.
+
+// Stop speech when user starts typing or recording
+document.getElementById('cinput').addEventListener('focus', ttsStop);
+
+/* ═══════════════════════════════════════════════════════════
+   VOICE ENGINE
+   Two modes:
+   1. Quick mic (🎙️) — one-shot: speak → transcribe → send
+   2. Voice Mode (🎤) — full hands-free loop:
+      listen → transcribe → process → bot speaks → auto-listen again
+   ═══════════════════════════════════════════════════════════ */
+
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+const voiceSupported = !!SR;
+
+let recog       = null;   // SpeechRecognition instance
+let isRec       = false;  // currently recording
+let voiceMode   = false;  // hands-free loop active
+let vmoPaused   = false;  // suppresses auto-restart while bot is speaking
+
+/* DOM refs for voice mode overlay */
+const vmoOverlay = document.getElementById('vmoOverlay');
+const vmoOrb     = document.getElementById('vmoOrb');
+const vmoStatus  = document.getElementById('vmoStatus');
+const vmoInterim = document.getElementById('vmoInterim');
+const vmoClose   = document.getElementById('vmoClose');
+const voiceModeBtn = document.getElementById('voiceModeBtn');
+
+/* ── Orb state helper ── */
+function setOrb(state, statusText, interimText) {
+  vmoOrb.className = 'vmo-orb ' + state;
+  vmoOrb.textContent = state==='listen' ? '🎙️' : state==='speak' ? '🔊' : state==='think' ? '⏳' : '🎙️';
+  if (statusText  !== undefined) vmoStatus.textContent  = statusText;
+  if (interimText !== undefined) vmoInterim.textContent = interimText;
+}
+
+/* ── Build / rebuild the recognition instance ── */
+function buildRecog(interimResults) {
+  if (!voiceSupported) return null;
+  const r = new SR();
+  r.lang = 'en-US';
+  r.continuous = false;
+  r.interimResults = !!interimResults;
+  return r;
+}
+
+/* ══════════════════════════════
+   MODE 1 — Quick mic (🎙️ button)
+   One shot, fills text box
+   ══════════════════════════════ */
+function startRec() {
+  if (!voiceSupported) { addMsg('bot','⚠️ Voice input not supported in this browser. Please use Chrome or Safari.'); return; }
+  recog = buildRecog(false);
+  recog.onresult = e => {
+    const t = e.results[0][0].transcript;
+    cinput.value = t;
+    stopRec();
+    sendMsg();
+  };
+  recog.onerror = stopRec;
+  recog.onend   = () => { if (isRec) stopRec(); };
+  isRec = true;
+  voiceBtn.className = 'ibtn rec';
+  vrecLabel.classList.add('show');
+  try { recog.start(); } catch(e) { stopRec(); }
+}
+
+function stopRec() {
+  isRec = false;
+  voiceBtn.className = 'ibtn';
+  vrecLabel.classList.remove('show');
+  try { if (recog) recog.stop(); } catch(e) {}
+}
+
+voiceBtn.onclick = () => isRec ? stopRec() : startRec();
+
+/* ══════════════════════════════════════
+   MODE 2 — Voice Mode (🎤 button)
+   Hands-free loop: listen → respond → listen
+   ══════════════════════════════════════ */
+
+function enterVoiceMode() {
+  if (!voiceSupported) {
+    addMsg('bot','⚠️ Voice mode requires Chrome or Safari. Please use one of those browsers.');
+    return;
+  }
+  voiceMode = true;
+  vmoPaused = false;
+  voiceModeBtn.className = 'ibtn voice-mode-btn active';
+  voiceModeBtn.title = 'Exit voice mode';
+  vmoOverlay.classList.add('show');
+  // Enable TTS automatically in voice mode
+  if (!ttsEnabled) {
+    ttsEnabled = true;
+    ttsBtn.className = 'tts-btn tts-on';
+    ttsBtn.textContent = '🔊';
+  }
+  vmListen();
+}
+
+function exitVoiceMode() {
+  voiceMode = false;
+  vmoPaused = false;
+  voiceModeBtn.className = 'ibtn voice-mode-btn';
+  voiceModeBtn.title = 'Hands-free voice conversation mode';
+  vmoOverlay.classList.remove('show');
+  ttsStop();
+  try { if (recog) recog.stop(); } catch(e) {}
+  setOrb('idle', 'Tap orb to speak', '');
+}
+
+/* Start listening in voice mode */
+function vmListen() {
+  if (!voiceMode || vmoPaused) return;
+  setOrb('listen', 'Listening…', '');
+
+  recog = buildRecog(true);   // interim results for live transcript display
+
+  recog.onresult = e => {
+    let interim = '', final = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      if (e.results[i].isFinal) final += e.results[i][0].transcript;
+      else interim += e.results[i][0].transcript;
+    }
+    vmoInterim.textContent = interim || final;
+    if (final) {
+      vmoInterim.textContent = final;
+      setOrb('think', 'Processing…', final);
+      vmoPaused = true;      // pause loop while processing + speaking
+      try { recog.stop(); } catch(e) {}
+      // Feed into the conversation engine
+      addMsg('user', esc(final));
+      handleStep(final.trim());
+    }
+  };
+
+  recog.onerror = (e) => {
+    // "no-speech" is normal — just restart
+    if (e.error === 'no-speech') { vmListen(); return; }
+    setOrb('idle', 'Tap orb to retry', e.error);
+  };
+
+  recog.onend = () => {
+    // If not paused (i.e. no final result came), restart listening
+    if (voiceMode && !vmoPaused) {
+      setTimeout(vmListen, 300);
+    }
+  };
+
+  try { recog.start(); } catch(e) {
+    setTimeout(vmListen, 600);
+  }
+}
+
+/* Called by ttsFlush() when bot finishes speaking — resumes listening */
+function vmResumeAfterSpeech() {
+  if (!voiceMode) return;
+  vmoPaused = false;
+  setOrb('listen', 'Listening…', '');
+  setTimeout(vmListen, 400);   // short pause so mic doesn't catch TTS echo
+}
+
+/* Orb tap — manual trigger to start listening if paused */
+vmoOrb.onclick = () => {
+  if (!voiceMode) return;
+  if (vmoPaused) return;   // bot still speaking — don't interrupt
+  vmListen();
+};
+
+voiceModeBtn.onclick = () => voiceMode ? exitVoiceMode() : enterVoiceMode();
+vmoClose.onclick = exitVoiceMode;
+
+/* ── Photo ── */
+const photoCameraInput  = document.getElementById('photoCameraInput');
+const photoGalleryInput = document.getElementById('photoGalleryInput');
+const photoSheet        = document.getElementById('photoSheet');
+const sheetBackdrop     = document.getElementById('sheetBackdrop');
+const photoOverlay      = document.getElementById('photoOverlay');
+const photoOverlayImg   = document.getElementById('photoOverlayImg');
+
+/* Open bottom sheet */
+function openPhotoSheet() {
+  photoSheet.classList.add('show');
+  sheetBackdrop.classList.add('show');
+  ttsStop();
+}
+function closePhotoSheet() {
+  photoSheet.classList.remove('show');
+  sheetBackdrop.classList.remove('show');
+}
+
+photoBtn.onclick = openPhotoSheet;
+document.getElementById('photoSheetCancel').onclick = closePhotoSheet;
+sheetBackdrop.onclick = closePhotoSheet;
+
+/* Camera option — opens rear camera directly */
+document.getElementById('optCamera').onclick = () => {
+  closePhotoSheet();
+  photoCameraInput.click();
+};
+
+/* Gallery option — opens photo library, allows multiple */
+document.getElementById('optGallery').onclick = () => {
+  closePhotoSheet();
+  photoGalleryInput.click();
+};
+
+/* Process selected file(s) */
+function handleFiles(files) {
+  if (!files || files.length === 0) return;
+  // Ensure photos array exists (guard against any state timing issues)
+  if (!Array.isArray(S.photos)) S.photos = [];
+
+  const total = files.length;           // capture length now — FileList can change
+  Array.from(files).forEach((f, idx) => {
+    const r = new FileReader();
+    r.onload = e => {
+      const dataUrl = e.target.result;
+      if (!dataUrl || !dataUrl.startsWith('data:image')) return; // reject non-images
+      S.photos.push({ dataUrl, name: f.name });
+      S.photoDataUrl = S.photos[0].dataUrl;
+      renderPhotoInChat(dataUrl, f.name, idx === total - 1); // use captured total
+    };
+    r.onerror = () => console.warn('Photo read failed:', f.name);
+    r.readAsDataURL(f);
+  });
+}
+
+function renderPhotoInChat(dataUrl, name, isLast) {
+  const existing = chatEl.querySelector('.photo-thumbs-msg');
+
+  if (existing) {
+    // Append thumbnail to the existing photo bubble
+    const thumbs = existing.querySelector('.photo-thumbs');
+    if (thumbs) appendThumb(thumbs, dataUrl, S.photos.length - 1);
+    // Update count label
+    const countEl = existing.querySelector('.photo-count-label');
+    if (countEl) countEl.textContent = `${S.photos.length} photo${S.photos.length>1?'s':''} attached`;
+  } else {
+    // Build the bubble entirely with DOM APIs — never use innerHTML twice on same element
+    const w   = document.createElement('div');
+    w.className = 'msg user photo-thumbs-msg';
+
+    const bub = document.createElement('div');
+    bub.className = 'bub';
+    bub.style.cssText = 'background:var(--blue);color:#fff;';
+
+    // Label
+    const label = document.createElement('strong');
+    label.className = 'photo-count-label';
+    label.textContent = `📷 ${S.photos.length} photo${S.photos.length>1?'s':''} attached`;
+    bub.appendChild(label);
+
+    // Thumbnails container
+    const thumbsDiv = document.createElement('div');
+    thumbsDiv.className = 'photo-thumbs';
+    bub.appendChild(thumbsDiv);
+
+    // Timestamp
+    const tsEl = document.createElement('div');
+    tsEl.className = 'ts';
+    tsEl.textContent = ts();
+    bub.appendChild(tsEl);
+
+    // Avatar
+    const av = document.createElement('div');
+    av.className = 'av u';
+    av.textContent = 'ME';
+
+    w.appendChild(bub);
+    w.appendChild(av);
+    chatEl.appendChild(w);
+
+    appendThumb(thumbsDiv, dataUrl, S.photos.length - 1);
+  }
+
+  scroll();
+
+  // Advance step after last photo in batch
+  if (isLast && S.step === 'photo') {
+    S.step = 'confirm';
+    typing(() => showSummary(), 900);
+  }
+}
+
+function appendThumb(container, dataUrl, idx) {
+  const wrap = document.createElement('div');
+  wrap.className = 'photo-thumb-wrap';
+  const img = document.createElement('img');
+  img.className = 'photo-thumb';
+  img.src = dataUrl;
+  img.alt = `Photo ${idx+1}`;
+  // Tap thumbnail → fullscreen preview
+  img.onclick = () => openOverlay(dataUrl);
+  const del = document.createElement('button');
+  del.className = 'photo-thumb-del';
+  del.textContent = '✕';
+  del.title = 'Remove photo';
+  del.onclick = () => {
+    S.photos.splice(idx, 1);
+    S.photoDataUrl = S.photos.length > 0 ? S.photos[0].dataUrl : null;
+    wrap.remove();
+    const countEl = chatEl.querySelector('#photoCount');
+    if (countEl) countEl.textContent = `${S.photos.length} photo${S.photos.length>1?'s':''} attached`;
+  };
+  wrap.appendChild(img); wrap.appendChild(del);
+  container.appendChild(wrap);
+}
+
+/* Fullscreen overlay */
+function openOverlay(dataUrl) {
+  photoOverlayImg.src = dataUrl;
+  photoOverlay.classList.add('show');
+}
+document.getElementById('photoOverlayClose').onclick = () => photoOverlay.classList.remove('show');
+photoOverlay.onclick = (e) => { if(e.target===photoOverlay) photoOverlay.classList.remove('show'); };
+
+/* Wire file inputs */
+photoCameraInput.onchange  = () => { handleFiles(photoCameraInput.files);  photoCameraInput.value=''; };
+photoGalleryInput.onchange = () => { handleFiles(photoGalleryInput.files); photoGalleryInput.value=''; };
+
+/* ── Send ── */
+function sendMsg() {
+  const t = cinput.value.trim(); if (!t) return;
+  cinput.value=''; cinput.style.height='auto'; onUserInput(t);
+}
+sendBtn.onclick = sendMsg;
+cinput.onkeydown = e => { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();} };
+cinput.oninput = () => { cinput.style.height='auto'; cinput.style.height=Math.min(cinput.scrollHeight,76)+'px'; };
+
+/* ── Reset ── */
+function resetState() {
+  Object.assign(S,{
+    step:'greeting',employeeName:'',jobTitle:'',incidentType:'',location:'',tplnr:'',
+    description:'',activity:'',severity:'',bodyPart:'',equipment:'',erTreated:'',
+    hospitalized:'',recordable:null,recordCriteria:[],daysAway:0,daysRestricted:0,
+    death:false,photoDataUrl:null,photos:[],incidentId:'',oshaCase:'',timestamp:'',wfStage:0,pmNotification:'',incidentTime:''
+  });
+  setWf(0);
+  ['sapCard','f301Card','f300Card','deadlineCard'].forEach(id => document.getElementById(id).classList.remove('show'));
+  banner.className='banner';
+}
+
+/* ── Boot ── */
+setTimeout(() => {
+  addMsg('bot',`<strong>Hello, I'm the Sempra EHS Field Incident Reporter.</strong><br><br>
+    I'll guide you through capturing all fields required for:<br>
+    <ul style="margin:6px 0 0 16px;font-size:12.5px;line-height:1.8">
+      <li>📋 <strong>OSHA Form 301</strong> — Injury & Illness Incident Report</li>
+      <li>📋 <strong>OSHA Form 300</strong> — Log of Work-Related Injuries (if recordable)</li>
+      <li>🗄️ <strong>SAP S/4HANA EHSM</strong> — QMEL Incident Notification</li>
+      <li>👔 <strong>Manager Approval</strong> via SAP Build Process Automation</li>
+    </ul><br>
+    You can <strong>type or use voice 🎙️</strong> to answer.<br><br>Are you reporting a new incident?`);
+  addQR(['Report New Incident','Look Up Existing Incident']);
+}, 400);
+
+</script>
+</body>
+</html>
